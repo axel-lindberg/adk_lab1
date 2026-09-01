@@ -11,7 +11,8 @@ class PersistentArray:
         self.root = root
         self.height = height
         
-
+stack = []
+        
 def bit(index: int, level: int) -> int: 
     mask = 1 << level
     bit = (index & mask) >> level
@@ -23,12 +24,14 @@ def requiredheight(index: int) -> int:
 def _maxinsubtree(node: Node | None) -> int:
     return node.maxinsubtree if node is not None else -1
 
-        
+#Skapa ny PersistentArray
 def newarray() -> PersistentArray:
     return PersistentArray(None, 0)
 
 
+#Sätt värdet på index i till value. Det ska vara ett mellanslag mellan set och i samt mellan i och value.
 def set(a: PersistentArray, i: int, value: int) -> PersistentArray:
+    stack.append(a)
     new_height = max(a.height, requiredheight(i))
     
     if new_height > a.height:
@@ -39,14 +42,15 @@ def set(a: PersistentArray, i: int, value: int) -> PersistentArray:
     
     new_root = _set(a.root, a.height, i, value)
     return PersistentArray(new_root, a.height)
-    
-         
+
+#rekursiv hjälpfunktion till set
 def _set(node: Node | None, level: int, i: int, value: int):
+    #Om det är ett löv retuneras value
     if level == 0:
         return Node(None, None, maxinsubtree = value)
-     
+    
     direction = bit(i, level - 1)
-     
+    
     if direction == 0:
         new_child = _set(node.left if node is not None else None, level - 1, i, value)
         other_child = node.right if node is not None else None
@@ -56,16 +60,52 @@ def _set(node: Node | None, level: int, i: int, value: int):
         new_child = _set(node.right if node is not None else None, level - 1, i, value)
         other_child = node.left if node is not None else None
         return Node(other_child, new_child, maxinsubtree=max(_maxinsubtree(new_child), _maxinsubtree(other_child)))
-    
+   
 def fill_left_tree (node: Node | None, current_height: int, target_height: int) -> Node | None:
     while current_height < target_height:
         node = Node(left = node, right = None, maxinsubtree=_maxinsubtree(node))
         current_height += 1
     return node
 
-# def get()
+#Backa tillbaka till läget en set-operation tidigare. Om ingen set-operation gjorts händer inget.
+def unset():
+    stack.pop()
 
-# def maxininterval
+#	Skriv ut värdet på index i på standard output på en egen rad
+def get(a: PersistentArray, i: int):
+    #Om a[i] inte har tilldelats ett värde tidigare skrivs 0
+    if a.root is None: print(0)
+    
+    required_height = requiredheight(i)
+    
+    #Om index ligger utanför trädet retuneras 0
+    if required_height > a.height: print(0)
+    
+    node = _get(a.root, a.height, i)
+    
+    if node is not None:
+        print(node.maxinsubtree)
+    
+    else:
+        print(0)
+
+#rekursiv hjälpfunktion till get 
+def _get(node: Node | None, level: int, i: int) -> Node:
+    if level == 0:
+        return node
+    
+    direction = bit(i, level - 1)
+    
+    if direction == 0:
+        next_node = _get(node.left if node is not None else None, level - 1, i)
+        return next_node
+        
+    else:
+        next_node = _get(node.right if node is not None else None, level - 1, i)
+        return next_node
+
+
+# def maxininterval(a: PersistentArray: left: int, right: int) -> int:
 
 # def maxsegment
 
@@ -77,19 +117,12 @@ def fill_left_tree (node: Node | None, current_height: int, target_height: int) 
 if __name__ == "__main__":
     a = newarray()
     print(f"Start: height={a.height}, root={a.root}")
-
-    a = set(a, 3, 17)
-    print(f"Efter set(3, 17): height={a.height}")
-    print(f"  root.maxinsubtree = {a.root.maxinsubtree}")
     
-    a = set(a, 3, 4177)
-    print(f"Efter set(3, 4177): height={a.height}")
-    print(f"  root.maxinsubtree = {a.root.maxinsubtree}")
+    a = set(a, 5, 12)
+    get(a, 5)
     
-    a = set(a, 5, 8)
-    print(f"Efter set(5, 8): height={a.height}")
-    print(f"  root.maxinsubtree = {a.root.maxinsubtree}")
+    a = set(a, 5, 15)
+    get(a, 5)
     
-    a = set(a, 16, 20)
-    print(f"Efter set(16, 20): height={a.height}")
-    print(f"  root.maxinsubtree = {a.root.maxinsubtree}")
+    a = unset()
+    get(a, 5)
