@@ -68,10 +68,11 @@ def fill_left_tree (node: Node | None, current_height: int, target_height: int) 
     return node
 
 #Backa tillbaka till läget en set-operation tidigare. Om ingen set-operation gjorts händer inget.
-def unset():
-    stack.pop()
+def unset() -> PersistentArray:
+    return stack.pop()
 
-#	Skriv ut värdet på index i på standard output på en egen rad
+
+#Skriv ut värdet på index i på standard output på en egen rad
 def get(a: PersistentArray, i: int):
     #Om a[i] inte har tilldelats ett värde tidigare skrivs 0
     if a.root is None: print(0)
