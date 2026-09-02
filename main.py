@@ -150,7 +150,7 @@ def maxrightsegment(node: Node | None, level: int, i: int) -> int:
     if direction == 0:
         return max(maxrightsegment(node.left, level - 1, i), _maxinsubtree(node.right))
 
-    #Strunta i värdet åt vänster och forsätt åt höger
+    #Strunta i värdet åt vänster och fortsätt åt höger
     else:
         return maxrightsegment(node.right, level - 1, i)
 
@@ -162,7 +162,7 @@ def maxleftsegment(node: Node | None, level: int, i: int) -> int:
 
     direction = bit(i, level - 1)
 
-    #Strunta i värdet åt höger och forsätt åt vänster
+    #Strunta i värdet åt höger och fortsätt åt vänster
     if direction == 0:
         return maxleftsegment(node.left, level - 1, i)
     
