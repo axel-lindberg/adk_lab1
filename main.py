@@ -107,24 +107,63 @@ def _get(node: Node | None, level: int, i: int) -> Node:
         return next_node
 
 
-# def maxininterval(a: PersistentArray, left: int, right: int) -> int:
+def maxininterval(a: PersistentArray, left: int, right: int) -> int:
+    return maxsegment(a.root, a.height, left, min(right, 2**(a.height) - 1))
 
-# def maxsegment
 
-# def maxrightsegment
+def maxsegment(node: Node | None, level: int, left: int, right: int) -> int:
+    if node is None:
+        return -1
+    if level == 0:
+        return node.maxinsubtree
+    
+    dir_left = bit(left, level - 1)
+    dir_right = bit(right, level - 1)
 
-# def maxleftsegment
+# Fall C
+    if dir_left == 0 and dir_right == 0:
+        
+        return maxsegment(node.left, level - 1, left, right)
+# Fall D
+    elif dir_left == 1 and dir_right == 1:
+        return maxsegment(node.right, level - 1, left, right)
+# Fall E
+    elif dir_left == 0 and dir_right == 1:
+        return max(maxleftsegment(node.right, level - 1, right), maxrightsegment(node.left, level - 1, left))    
+
+def maxrightsegment(node: Node | None, level: int, i: int) -> int:
+    if node is None:
+        return -1
+    if level == 0:
+        return node.maxinsubtree
+
+    direction = bit(i, level - 1)
+
+    if direction == 0:
+        return max(maxrightsegment(node.left, level - 1, i), _maxinsubtree(node.right))
+
+    else:
+        return maxrightsegment(node.right, level - 1, i)
+
+def maxleftsegment(node: Node | None, level: int, i: int) -> int:
+    if node is None:
+        return -1
+    if level == 0:
+        return node.maxinsubtree
+
+    direction = bit(i, level - 1)
+
+    if direction == 0:
+        return maxleftsegment(node.left, level - 1, i)
+    
+    else:
+        return max(maxleftsegment(node.right, level - 1, i), _maxinsubtree(node.left))
 
     
 if __name__ == "__main__":
     a = newarray()
     print(f"Start: height={a.height}, root={a.root}")
     
-    a = set(a, 5, 12)
-    get(a, 5)
-    
-    a = set(a, 5, 15)
-    get(a, 5)
-    
-    a = unset()
-    get(a, 5)
+    a = set(a, 6, 5)
+    a = set(a, 10, 20)
+    print(maxininterval(a, 6, 10000))
