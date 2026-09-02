@@ -17,11 +17,14 @@ stack = []
 def bit(index: int, level: int) -> int: 
     mask = 1 << level
     bit = (index & mask) >> level
+    
     return bit
 
+#Minsta höjden som krävs för ett index ska få plats i trädet
 def requiredheight(index: int) -> int:
     return math.ceil(math.log2(index + 1))
 
+#Hämta maxinsubtree
 def _maxinsubtree(node: Node | None) -> int:
     return node.maxinsubtree if node is not None else -1
 
@@ -44,7 +47,7 @@ def set(a: PersistentArray, i: int, value: int) -> PersistentArray:
     new_root = _set(a.root, a.height, i, value)
     return PersistentArray(new_root, a.height)
 
-#rekursiv hjälpfunktion till set
+#Rekursiv hjälpfunktion till set
 def _set(node: Node | None, level: int, i: int, value: int):
     #Om det är ett löv retuneras value
     if level == 0:
@@ -91,7 +94,7 @@ def get(a: PersistentArray, i: int):
     else:
         print(0)
 
-#rekursiv hjälpfunktion till get 
+#Rekursiv hjälpfunktion till get 
 def _get(node: Node | None, level: int, i: int) -> Node:
     if level == 0:
         return node
@@ -108,40 +111,46 @@ def _get(node: Node | None, level: int, i: int) -> Node:
 
 
 def maxininterval(a: PersistentArray, left: int, right: int) -> int:
+    #Om right ligger utanför trädets bredd -> trädets bredd blir högra gränsen
     return maxsegment(a.root, a.height, left, min(right, 2**(a.height) - 1))
-
 
 def maxsegment(node: Node | None, level: int, left: int, right: int) -> int:
     if node is None:
         return -1
+    
     if level == 0:
         return node.maxinsubtree
     
     dir_left = bit(left, level - 1)
     dir_right = bit(right, level - 1)
 
-# Fall C
+    #Fall C: Om left och right båda ligger i vänster delträd
     if dir_left == 0 and dir_right == 0:
         
         return maxsegment(node.left, level - 1, left, right)
-# Fall D
+    
+    #Fall D: Om left och right båda ligger i höger delträd
     elif dir_left == 1 and dir_right == 1:
         return maxsegment(node.right, level - 1, left, right)
-# Fall E
+    
+    #Fall E: Om left ligger i vänster delträd och right ligger i höger delträd
     elif dir_left == 0 and dir_right == 1:
         return max(maxleftsegment(node.right, level - 1, right), maxrightsegment(node.left, level - 1, left))    
 
 def maxrightsegment(node: Node | None, level: int, i: int) -> int:
     if node is None:
         return -1
+    
     if level == 0:
         return node.maxinsubtree
 
     direction = bit(i, level - 1)
 
+    #Jämför med det största värdet åt höger och forstätt åt vänster
     if direction == 0:
         return max(maxrightsegment(node.left, level - 1, i), _maxinsubtree(node.right))
 
+    #Strunta i värdet åt vänster och forsätt åt höger
     else:
         return maxrightsegment(node.right, level - 1, i)
 
@@ -153,9 +162,11 @@ def maxleftsegment(node: Node | None, level: int, i: int) -> int:
 
     direction = bit(i, level - 1)
 
+    #Strunta i värdet åt höger och forsätt åt vänster
     if direction == 0:
         return maxleftsegment(node.left, level - 1, i)
     
+    #Jämför med det största värdet åt vänster och forstätt åt höger
     else:
         return max(maxleftsegment(node.right, level - 1, i), _maxinsubtree(node.left))
 
