@@ -1,4 +1,5 @@
 import math
+import sys
 
 class Node:
     def __init__(self, left=None, right=None, maxinsubtree=-1):
@@ -12,7 +13,7 @@ class PersistentArray:
         self.height = height
         
 stack = []
-        
+
 def bit(index: int, level: int) -> int: 
     mask = 1 << level
     bit = (index & mask) >> level
@@ -29,7 +30,7 @@ def newarray() -> PersistentArray:
     return PersistentArray(None, 0)
 
 
-#Sätt värdet på index i till value. Det ska vara ett mellanslag mellan set och i samt mellan i och value.
+#Sätt värdet på index i till value
 def set(a: PersistentArray, i: int, value: int) -> PersistentArray:
     stack.append(a)
     new_height = max(a.height, requiredheight(i))
@@ -106,7 +107,7 @@ def _get(node: Node | None, level: int, i: int) -> Node:
         return next_node
 
 
-# def maxininterval(a: PersistentArray: left: int, right: int) -> int:
+# def maxininterval(a: PersistentArray, left: int, right: int) -> int:
 
 # def maxsegment
 
