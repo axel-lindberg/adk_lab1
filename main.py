@@ -1,5 +1,6 @@
 import math
-import sys
+import fileinput
+import string
 
 class Node:
     def __init__(self, left=None, right=None, maxinsubtree=-1):
@@ -73,26 +74,32 @@ def fill_left_tree (node: Node | None, current_height: int, target_height: int) 
 
 #Backa tillbaka till läget en set-operation tidigare. Om ingen set-operation gjorts händer inget.
 def unset() -> PersistentArray:
-    return stack.pop()
+    if stack:
+        return stack.pop()
 
 
 #Skriv ut värdet på index i på standard output på en egen rad
 def get(a: PersistentArray, i: int):
-    #Om a[i] inte har tilldelats ett värde tidigare skrivs 0
-    if a.root is None: print(0)
-    
-    required_height = requiredheight(i)
-    
-    #Om index ligger utanför trädet retuneras 0
-    if required_height > a.height: print(0)
-    
-    node = _get(a.root, a.height, i)
-    
-    if node is not None:
-        print(node.maxinsubtree)
+    if a is None: 
+        print(0)
+        return
     
     else:
-        print(0)
+        required_height = requiredheight(i)
+        
+        #Om index ligger utanför trädet retuneras 0
+        if required_height > a.height: 
+            print(0)
+            return
+        
+        node = _get(a.root, a.height, i)
+        
+        if node is not None:
+            print(node.maxinsubtree)
+        
+        #Om a[i] inte har tilldelats ett värde tidigare skrivs 0
+        else:
+            print(0)
 
 #Rekursiv hjälpfunktion till get 
 def _get(node: Node | None, level: int, i: int) -> Node:
@@ -112,7 +119,12 @@ def _get(node: Node | None, level: int, i: int) -> Node:
 
 def maxininterval(a: PersistentArray, left: int, right: int) -> int:
     #Om right ligger utanför trädets bredd -> trädets bredd blir högra gränsen
-    return maxsegment(a.root, a.height, left, min(right, 2**(a.height) - 1))
+    max_index = 2**a.height - 1
+    right = min(right, max_index)
+    if left > right:
+        return 0
+    result = maxsegment(a.root, a.height, left, right)
+    return 0 if result == -1 else result
 
 def maxsegment(node: Node | None, level: int, left: int, right: int) -> int:
     if node is None:
@@ -169,12 +181,29 @@ def maxleftsegment(node: Node | None, level: int, i: int) -> int:
     #Jämför med det största värdet åt vänster och forstätt åt höger
     else:
         return max(maxleftsegment(node.right, level - 1, i), _maxinsubtree(node.left))
-
+    
+#Styr program    
+def control_program():
+    a = newarray()
+    
+    for line in fileinput.input():
+        strs = line.split()
+        
+        if not strs:
+            continue
+        
+        match strs[0]:
+            case "get":
+                get(a, int(strs[1]))
+            case "set":
+                a = set(a, int(strs[1]), int(strs[2]))
+            case "unset":
+                a = unset()
+            case "maxininterval":
+                print(maxininterval(a, int(strs[1]), int(strs[2])))
+            case _:
+                print("unknown")
+                  
     
 if __name__ == "__main__":
-    a = newarray()
-    print(f"Start: height={a.height}, root={a.root}")
-    
-    a = set(a, 6, 5)
-    a = set(a, 10, 20)
-    print(maxininterval(a, 6, 10000))
+    control_program()

@@ -1,0 +1,7 @@
+set 999999 1000
+get 1000000
+get 999999
+unset
+get 999999
+unset
+get 999999
